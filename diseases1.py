@@ -5,6 +5,12 @@ from sklearn.model_selection import train_test_split
 import base64
 from fpdf import FPDF
 
+class PDF(FPDF):
+    def footer(self):
+        self.set_y(-15)
+        self.set_font("Arial", style="I", size=8)
+        self.cell(0, 10, "Created by Health Genie", 0, 0, "C")
+
 def main():
     
     st.title('Health Genie - Disease Prediction')
@@ -64,16 +70,26 @@ def main():
         """)
         
         # Create PDF with predicted output
-        pdf = FPDF()
+        pdf = PDF()
         pdf.add_page()
         pdf.set_font("Arial", size = 12)
         pdf.cell(200, 10, txt = f"Predicted Disease: {predicted_disease}", ln = True, align = 'C')
         pdf.cell(200, 10, txt = "Additional Information:", ln = True, align = 'L')
         if predicted_disease in disease_info:
-            pdf.multi_cell(0, 10, txt = disease_info[predicted_disease])
+            additional_info = disease_info[predicted_disease]
+            lines = pdf.multi_cell(0, 10, txt=additional_info)
+            total_height = sum(lines)
+            if total_height > 275:  # Adjust height to fit on one page
+                pdf.add_page()
+                pdf.set_font("Arial", size = 12)
+                pdf.cell(200, 10, txt = f"Predicted Disease: {predicted_disease}", ln = True, align = 'C')
+                pdf.cell(200, 10, txt = "Additional Information:", ln = True, align = 'L')
+                pdf.multi_cell(0, 10, txt=additional_info)
         else:
             pdf.multi_cell(0, 10, txt = "Additional information not available.")
         
+        pdf.footer()  # Add footer to each page
+
         # Save PDF
         pdf_output = "predicted_output.pdf"
         pdf.output(pdf_output)
