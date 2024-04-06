@@ -2,6 +2,8 @@ import streamlit as st
 import pandas as pd
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.model_selection import train_test_split
+import base64
+from fpdf import FPDF
 
 def main():
     
@@ -60,6 +62,28 @@ def main():
         st.markdown("""
         **Disclaimer:** This is a machine learning-based model for disease prediction. While it can provide insights, it may not always be accurate. For accurate medical advice, please consult a qualified healthcare professional.
         """)
+        
+        # Create PDF with predicted output
+        pdf = FPDF()
+        pdf.add_page()
+        pdf.set_font("Arial", size = 12)
+        pdf.cell(200, 10, txt = f"Predicted Disease: {predicted_disease}", ln = True, align = 'C')
+        pdf.cell(200, 10, txt = "Additional Information:", ln = True, align = 'L')
+        if predicted_disease in disease_info:
+            pdf.multi_cell(0, 10, txt = disease_info[predicted_disease])
+        else:
+            pdf.multi_cell(0, 10, txt = "Additional information not available.")
+        
+        # Save PDF
+        pdf_output = "predicted_output.pdf"
+        pdf.output(pdf_output)
+
+        # Create a download link for the PDF
+        with open(pdf_output, "rb") as f:
+            data = f.read()
+            b64 = base64.b64encode(data).decode()
+            href = f'<a href="data:application/octet-stream;base64,{b64}" download="{pdf_output}">Download Predicted Output</a>'
+            st.markdown(href, unsafe_allow_html=True)
         
         
     
