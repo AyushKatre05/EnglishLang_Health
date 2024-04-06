@@ -2,7 +2,5 @@ streamlit==1.31.1
 pandas==2.2.0
 scikit-learn==1.4.0
 scikit-metrics==0.1.0
-SpeechRecognition
 googletrans==4.0.0-rc1
-PyAudio
 fpdf
