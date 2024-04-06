@@ -5,3 +5,4 @@ scikit-metrics==0.1.0
 SpeechRecognition
 googletrans==4.0.0-rc1
 PyAudio
+fpdf
